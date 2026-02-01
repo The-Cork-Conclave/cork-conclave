@@ -1160,11 +1160,17 @@ img {
   }
 
   .nav {
-    display: none;
+    gap: 16px;
+    font-size: 0.9rem;
   }
 
   .mobile-only {
-    display: inline-flex;
+    display: none;
+  }
+
+  .header-inner {
+    flex-wrap: wrap;
+    row-gap: 12px;
   }
 
   .contact-grid {
