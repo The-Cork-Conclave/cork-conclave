@@ -93,6 +93,7 @@ img {
 
 .site {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
 }
@@ -1346,6 +1347,7 @@ img {
 
   .event-image-card {
     max-width: 100%;
+    aspect-ratio: 3 / 4;
   }
 
   .event-details-card {
