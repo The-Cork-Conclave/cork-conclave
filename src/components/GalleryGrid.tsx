@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 
 interface GalleryImage {
   url: string;
@@ -49,7 +50,15 @@ export default function GalleryGrid({ images }: GalleryGridProps) {
             className="gallery-item"
             onClick={() => openLightbox(index)}
           >
-            <img src={image.url} alt={image.alt} loading="lazy" />
+            <Image
+              src={image.url}
+              alt={image.alt}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              style={{ objectFit: 'cover' }}
+              loading={index < 6 ? 'eager' : 'lazy'}
+              quality={85}
+            />
             <div className="gallery-item-overlay">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="11" cy="11" r="8"></circle>
@@ -96,9 +105,14 @@ export default function GalleryGrid({ images }: GalleryGridProps) {
           </button>
 
           <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
-            <img
+            <Image
               src={images[currentIndex].url}
               alt={images[currentIndex].alt}
+              width={1920}
+              height={1080}
+              style={{ objectFit: 'contain', width: 'auto', height: 'auto', maxWidth: '100%', maxHeight: '90vh' }}
+              quality={90}
+              priority
             />
           </div>
 

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -66,9 +67,14 @@ export default function Home() {
           </div>
 
           <div className="event-image-card">
-            <img
+            <Image
               src="/images/love at first sip.jpeg"
               alt="Love At First Sip event"
+              fill
+              sizes="(max-width: 900px) 400px, 360px"
+              style={{ objectFit: 'cover' }}
+              priority
+              quality={90}
             />
           </div>
 
@@ -84,7 +90,7 @@ Join us at our love-themed Cork Conclave event this February.
             </p>
             <ul>
               <li>Saturday Feb 21, 4:00 PM</li>
-              <li>Pasta Xpress Osuntokun Bodija, {site.contact.city}</li>
+              <li>Shaburg, 12 Awolowo Ave. {site.contact.city}</li>
               <li>Limited Spots Available</li>
             </ul>
             <div className="cta-row">
@@ -151,7 +157,15 @@ Join us at our love-themed Cork Conclave event this February.
           <div className="gallery-preview-grid">
             {galleryPreview.map((image, index) => (
               <Link key={index} href="/gallery" className="gallery-preview-item">
-                <img src={image.url} alt={image.alt} />
+                <Image
+                  src={image.url}
+                  alt={image.alt}
+                  fill
+                  sizes="(max-width: 640px) 50vw, 25vw"
+                  style={{ objectFit: 'cover' }}
+                  loading={index < 2 ? 'eager' : 'lazy'}
+                  quality={85}
+                />
                 <div className="gallery-preview-overlay">
                   <span>View Gallery</span>
                 </div>

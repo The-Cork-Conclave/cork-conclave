@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -58,10 +59,13 @@ export default function AboutPage() {
           <div className="grid two">
             <div className="card">
               <div className="curator-image-wrapper">
-                <img
+                <Image
                   src="/images/kiishi.jpeg"
                   alt="Kiishi - Cork Conclave Co-founder"
-                  className="curator-image"
+                  fill
+                  sizes="(max-width: 900px) 400px, 50vw"
+                  style={{ objectFit: 'cover', objectPosition: 'center 20%' }}
+                  quality={85}
                 />
               </div>
               <h3>Kiishi</h3>
@@ -71,10 +75,13 @@ export default function AboutPage() {
             </div>
             <div className="card">
               <div className="curator-image-wrapper">
-                <img
+                <Image
                   src="/images/Joe.jpeg"
                   alt="Joe - Cork Conclave Co-founder"
-                  className="curator-image"
+                  fill
+                  sizes="(max-width: 900px) 400px, 50vw"
+                  style={{ objectFit: 'cover', objectPosition: 'center 20%' }}
+                  quality={85}
                 />
               </div>
               <h3>Joe</h3>
