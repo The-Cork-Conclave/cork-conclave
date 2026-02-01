@@ -1160,8 +1160,8 @@ img {
   }
 
   .nav {
-    gap: 16px;
-    font-size: 0.9rem;
+    gap: 14px;
+    font-size: 0.85rem;
   }
 
   .mobile-only {
@@ -1169,8 +1169,7 @@ img {
   }
 
   .header-inner {
-    flex-wrap: wrap;
-    row-gap: 12px;
+    gap: 16px;
   }
 
   .contact-grid {

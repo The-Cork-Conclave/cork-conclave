@@ -68,7 +68,7 @@ export default function Home() {
 
           <div className="event-image-card">
             <Image
-              src="/images/love at first sip.jpeg"
+              src="/images/love-at-first-sip.jpeg"
               alt="Love At First Sip event"
               fill
               sizes="(max-width: 900px) 400px, 360px"
