@@ -196,6 +196,7 @@ img {
   box-shadow: var(--shadow);
   border: 1px solid var(--border);
   background: var(--surface);
+  aspect-ratio: 3 / 4;
 }
 
 .event-image-card img {
@@ -952,7 +953,7 @@ img {
 }
 
 .footer {
-  padding: 48px 0 56px;
+  padding: 48px 0 32px;
   border-top: 1px solid var(--border);
   background: rgba(208, 192, 226, 0.06);
 }
@@ -1361,7 +1362,7 @@ img {
   }
 
   .footer {
-    padding: 40px 0;
+    padding: 32px 0 24px;
   }
 
   .footer-links {
