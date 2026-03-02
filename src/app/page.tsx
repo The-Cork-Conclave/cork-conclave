@@ -81,7 +81,7 @@ export default function Home() {
           <div className="event-details-card">
             <span className="badge">Next Conclave</span>
             <h2 className="section-title">
-              Love At First Sip
+              Sofa Sessions
             </h2>
             <p className="muted">
      Looking for a place to channel your inner Whitney Houston? A glass of wine might help with that.
