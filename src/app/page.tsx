@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function Home() {
   const upcomingEvent = {
-    ticketLink: "https://tix.africa/discover/love-at-first-sip", // Replace with your actual ticket link
+    ticketLink: "https://tix.africa/discover/sofasessions", // Replace with your actual ticket link
   };
 
   // Preview gallery images from recent events
@@ -68,8 +68,8 @@ export default function Home() {
 
           <div className="event-image-card">
             <Image
-              src="/images/love-at-first-sip.jpeg"
-              alt="Love At First Sip event"
+              src="/images/sofa sessions.jpeg"
+              alt="Sofa Sessions event"
               fill
               sizes="(max-width: 900px) 400px, 360px"
               style={{ objectFit: 'cover' }}
@@ -84,13 +84,11 @@ export default function Home() {
               Love At First Sip
             </h2>
             <p className="muted">
-             It's the season of love!
-And what is love without some good wine to spice up the moment.
-Join us at our love-themed Cork Conclave event this February.
+     Looking for a place to channel your inner Whitney Houston? A glass of wine might help with that.
             </p>
             <ul>
-              <li>Saturday Feb 21, 4:00 PM</li>
-              <li>Shaburg, 12 Awolowo Ave. {site.contact.city}</li>
+              <li>Saturday Mar 21, 4:00 PM</li>
+              <li>Anifalaje Akobo{site.contact.city}</li>
               <li>Limited Spots Available</li>
             </ul>
             <div className="cta-row">
