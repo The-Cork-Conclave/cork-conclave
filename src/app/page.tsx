@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function Home() {
   const upcomingEvent = {
-    ticketLink: "https://tix.africa/discover/sofasessions", // Replace with your actual ticket link
+    ticketLink: "https://tix.africa/discover/sofa-sessions", // Replace with your actual ticket link
   };
 
   // Preview gallery images from recent events
@@ -87,7 +87,7 @@ export default function Home() {
      Looking for a place to channel your inner Whitney Houston? A glass of wine might help with that.
             </p>
             <ul>
-              <li>Saturday Mar 21, 4:00 PM</li>
+              <li>Saturday Mar 28, 4:00 PM</li>
               <li>Anifalaje Akobo{site.contact.city}</li>
               <li>Limited Spots Available</li>
             </ul>
