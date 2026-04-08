@@ -198,7 +198,6 @@ img {
   border: 1px solid var(--border);
   background: var(--surface);
   aspect-ratio: 3 / 4;
-  align-self: start;
 }
 
 .event-image-card img {
