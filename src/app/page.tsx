@@ -68,7 +68,7 @@ export default function Home() {
 
           <div className="event-image-card">
             <Image
-              src="/images/back to the roots.jpeg"
+              src="/images/april.jpeg"
               alt="Back To The Roots"
               fill
               sizes="(max-width: 900px) 400px, 360px"
