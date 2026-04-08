@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function Home() {
   const upcomingEvent = {
-    ticketLink: "https://tix.africa/discover/sofa-sessions", // Replace with your actual ticket link
+    ticketLink: "hhttps://tix.africa/discover/backtotheroots", // Replace with your actual ticket link
   };
 
   // Preview gallery images from recent events
@@ -69,7 +69,7 @@ export default function Home() {
           <div className="event-image-card">
             <Image
               src="/images/sofa sessions.jpeg"
-              alt="Sofa Sessions event"
+              alt="Back To The Roots"
               fill
               sizes="(max-width: 900px) 400px, 360px"
               style={{ objectFit: 'cover' }}
@@ -81,14 +81,13 @@ export default function Home() {
           <div className="event-details-card">
             <span className="badge">Next Conclave</span>
             <h2 className="section-title">
-              Sofa Sessions
+              Back To The Roots
             </h2>
             <p className="muted">
-     Looking for a place to channel your inner Whitney Houston? A glass of wine might help with that.
-            </p>
+Ransack your wardrobes, pull out your ólekús and your dànṣíkís, your agbádás and sọrọs, your ìrós and bùbá, and then come drink wine with the good people of The Cork Conclave.</p>
             <ul>
-              <li>Saturday Mar 28, 4:00 PM</li>
-              <li>Anifalaje Akobo{site.contact.city}</li>
+              <li>Saturday Apr 18, 4:00 PM</li>
+              <li>Palms Mall, Ring Road{site.contact.city}</li>
               <li>Limited Spots Available</li>
             </ul>
             <div className="cta-row">
