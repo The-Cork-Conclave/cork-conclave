@@ -1347,7 +1347,7 @@ img {
 
   .event-image-card {
     max-width: 100%;
-    min-height: 420px;
+    aspect-ratio: 3 / 4;
   }
 
   .event-details-card {
