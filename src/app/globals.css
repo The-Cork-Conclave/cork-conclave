@@ -197,7 +197,7 @@ img {
   box-shadow: var(--shadow);
   border: 1px solid var(--border);
   background: var(--surface);
-  aspect-ratio: 2 / 4;
+  aspect-ratio: 3 / 4;
 }
 
 .event-image-card img {
