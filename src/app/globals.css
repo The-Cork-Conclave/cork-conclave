@@ -197,7 +197,7 @@ img {
   box-shadow: var(--shadow);
   border: 1px solid var(--border);
   background: var(--surface);
-  aspect-ratio: 3 / 4;
+  min-height: 420px;
 }
 
 .event-image-card img {
@@ -1347,7 +1347,7 @@ img {
 
   .event-image-card {
     max-width: 100%;
-    aspect-ratio: 3 / 4;
+    min-height: 420px;
   }
 
   .event-details-card {
