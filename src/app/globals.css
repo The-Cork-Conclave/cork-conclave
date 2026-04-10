@@ -167,14 +167,14 @@ img {
 
 .hero-grid {
   display: grid;
-  grid-template-columns: 1fr 420px;
+  grid-template-columns: 1fr 620px;
   gap: 40px;
   align-items: center;
 }
 
 .event-column {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 0;
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -203,8 +203,8 @@ img {
   position: relative;
   overflow: hidden;
   background: var(--surface);
-  aspect-ratio: 16 / 9;
-  flex-shrink: 0;
+  flex: 0 0 43%;
+  min-height: 280px;
 }
 
 .event-image-card img {
@@ -223,9 +223,10 @@ img {
     rgba(252, 163, 158, 0.28) 55%,
     rgba(253, 74, 74, 0.22) 100%
   );
-  border-top: 1px solid rgba(253, 74, 74, 0.18);
+  border-left: 1px solid rgba(253, 74, 74, 0.18);
   display: flex;
   flex-direction: column;
+  flex: 1;
   gap: 16px;
 }
 
@@ -1078,13 +1079,21 @@ img {
   }
 
   .event-column {
+    flex-direction: column;
     width: 100%;
     max-width: 500px;
     margin: 0 auto;
   }
 
   .event-image-card {
+    flex: none;
+    min-height: 0;
     aspect-ratio: 4 / 3;
+  }
+
+  .event-details-card {
+    border-left: none;
+    border-top: 1px solid rgba(253, 74, 74, 0.18);
   }
 
   .grid.three {
