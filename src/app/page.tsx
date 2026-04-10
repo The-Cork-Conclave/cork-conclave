@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function Home() {
   const upcomingEvent = {
-    ticketLink: "hhttps://tix.africa/discover/backtotheroots", // Replace with your actual ticket link
+    ticketLink: "https://houseofexplorers.com/discover/backtotheroots", // Replace with your actual ticket link
   };
 
   // Preview gallery images from recent events
