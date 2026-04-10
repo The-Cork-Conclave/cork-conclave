@@ -66,41 +66,39 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="event-column">
-            <div className="event-image-card">
-              <Image
-                src="/images/backtotheroots.jpeg"
-                alt="Back To The Roots"
-                fill
-                sizes="(max-width: 900px) 100vw, 400px"
-                style={{ objectFit: 'cover', objectPosition: 'center top' }}
-                priority
-                quality={90}
-              />
-            </div>
+          <div className="event-image-card">
+            <Image
+              src="/images/backtotheroots.jpeg"
+              alt="Back To The Roots"
+              fill
+              sizes="(max-width: 900px) 400px, 360px"
+              style={{ objectFit: 'cover' }}
+              priority
+              quality={90}
+            />
+          </div>
 
-            <div className="event-details-card">
-              <span className="badge">Next Conclave</span>
-              <h2 className="section-title">
-                Back To The Roots
-              </h2>
-              <p className="muted">
+          <div className="event-details-card">
+            <span className="badge">Next Conclave</span>
+            <h2 className="section-title">
+              Back To The Roots
+            </h2>
+            <p className="muted">
 Ransack your wardrobes, pull out your ólekús and your dànṣíkís, your agbádás and sọrọs, your ìrós and bùbá, and then come drink wine with the good people of The Cork Conclave.</p>
-              <ul>
-                <li>Saturday Apr 18, 4:00 PM</li>
-                <li>Palms Mall, Ring Road{site.contact.city}</li>
-                <li>Limited Spots Available</li>
-              </ul>
-              <div className="cta-row">
-                <a
-                  className="button"
-                  href={upcomingEvent.ticketLink}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Save Your Spot
-                </a>
-              </div>
+            <ul>
+              <li>Saturday Apr 18, 4:00 PM</li>
+              <li>Palms Mall, Ring Road{site.contact.city}</li>
+              <li>Limited Spots Available</li>
+            </ul>
+            <div className="cta-row">
+              <a
+                className="button"
+                href={upcomingEvent.ticketLink}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Save Your Spot
+              </a>
             </div>
           </div>
         </div>
