@@ -21,7 +21,7 @@ export default function AboutPage() {
               <p className="eyebrow">Our Story</p>
               <h1 className="hero-title">We Love Wine</h1>
               <p className="hero-subtitle">
-                One evening, two young women asked each other - why don't we start a club to bring together all the people in Ibadan who love wine? And thus The Cork Conclave was born.
+                One evening, two young women asked each other - why don&apos;t we start a club to bring together all the people in Ibadan who love wine? And thus The Cork Conclave was born.
               </p>
               <p className="hero-subtitle">
                 Little did they know the ripple effects of that little decision. Since its debut in November 2024, the Cork Conclave has met monthly, uniting a very diverse group of people under a singular concept: Wine!

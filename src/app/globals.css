@@ -1,3 +1,8 @@
+/* Import Tailwind without Preflight (base reset) */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
 :root {
   color-scheme: dark;
   --bg: #281121;
@@ -103,7 +108,7 @@ img {
 }
 
 .container {
-  width: min(1100px, 92vw);
+  width: min(1300px, 92vw);
   margin: 0 auto;
 }
 
@@ -167,7 +172,7 @@ img {
 
 .hero-grid {
   display: grid;
-  grid-template-columns: 1fr 360px 380px;
+  grid-template-columns: 1fr 380px 380px;
   gap: 28px;
   align-items: stretch;
 }
@@ -198,6 +203,8 @@ img {
   border: 1px solid var(--border);
   background: var(--surface);
   aspect-ratio: 3 / 4;
+  width: 100%;
+  max-width: 420px;
 }
 
 .event-image-card img {
@@ -207,6 +214,7 @@ img {
   object-position: center;
   display: block;
 }
+
 
 .event-details-card {
   padding: 32px;
@@ -1062,6 +1070,7 @@ img {
     grid-template-columns: 1fr;
     gap: 40px;
   }
+  
 
   .hero-intro {
     min-height: auto;
@@ -1198,7 +1207,7 @@ img {
 
 @media (max-width: 600px) {
   .hero {
-    padding: 80px 0 64px;
+    padding: 70px 0 64px;
   }
 
   .section {
@@ -1412,6 +1421,8 @@ img {
     padding: 24px;
   }
 }
+
+
 
 @media (max-width: 400px) {
   .hero {
