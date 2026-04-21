@@ -44,15 +44,15 @@ export default function Home() {
     <>
       <script
         type="application/ld+json"
-        // eslint-disable-next-line react/no-danger
+
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
       />
       <section className="hero">
-        <div className="container hero-grid">
-          <div className="hero-intro">
+        <div className="container flex flex-col xl:flex-row gap-12 items-center justify-center">
+          <div className="hero-intro w-full xl:w-1/3 2xl:w-2/5">
             <h1 className="hero-title">The Cork Conclave</h1>
             <p className="hero-subtitle">
-             A community of young people who use wine as an excuse to build a community. Join us monthly at fun evenings curated to ensure connection, enjoyment and relaxation.
+              A community of young people who use wine as an excuse to build a community. Join us monthly at fun evenings curated to ensure connection, enjoyment and relaxation.
             </p>
             <div className="cta-row">
               <a
@@ -66,39 +66,41 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="event-image-card">
-            <Image
-              src="/images/backtotheroots.jpeg"
-              alt="Back To The Roots"
-              fill
-              sizes="(max-width: 900px) 400px, 360px"
-              style={{ objectFit: 'cover' }}
-              priority
-              quality={90}
-            />
-          </div>
+          <div className="w-full flex flex-col md:flex-row gap-12 md:gap-4 items-center md:items-stretch justify-center 2xl:w-3/5">
+            <div className="event-image-card md:flex-1 xl:w-1/3 2xl:w-full 2xl:min-w-[400px]!">
+              <Image
+                src="/images/backtotheroots.jpeg"
+                alt="Back To The Roots"
+                fill
+                sizes="(max-width: 900px) 400px, 360px"
+                style={{ objectFit: 'cover' }}
+                priority
+                quality={90}
+              />
+            </div>
 
-          <div className="event-details-card">
-            <span className="badge">Next Conclave</span>
-            <h2 className="section-title">
-              Back To The Roots
-            </h2>
-            <p className="muted">
-Ransack your wardrobes, pull out your ólekús and your dànṣíkís, your agbádás and sọrọs, your ìrós and bùbá, and then come drink wine with the good people of The Cork Conclave.</p>
-            <ul>
-              <li>Saturday Apr 18, 4:00 PM</li>
-              <li>Palms Mall, Ring Road{site.contact.city}</li>
-              <li>Limited Spots Available</li>
-            </ul>
-            <div className="cta-row">
-              <a
-                className="button"
-                href={upcomingEvent.ticketLink}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Save Your Spot
-              </a>
+            <div className="event-details-card md:flex-1 xl:w-1/3 2xl:w-full">
+              <span className="badge">Next Conclave</span>
+              <h2 className="section-title">
+                Back To The Roots
+              </h2>
+              <p className="muted">
+                Ransack your wardrobes, pull out your ólekús and your dànṣíkís, your agbádás and sọrọs, your ìrós and bùbá, and then come drink wine with the good people of The Cork Conclave.</p>
+              <ul>
+                <li>Saturday Apr 18, 4:00 PM</li>
+                <li>Palms Mall, Ring Road{site.contact.city}</li>
+                <li>Limited Spots Available</li>
+              </ul>
+              <div className="cta-row">
+                <a
+                  className="button"
+                  href={upcomingEvent.ticketLink}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Save Your Spot
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -125,15 +127,15 @@ Ransack your wardrobes, pull out your ólekús and your dànṣíkís, your agb�
             <div className="card">
               <h3>Community</h3>
               <p className="muted">
-               We are not a wine club. We are a community of people who love wine, and love life. 
-               We come together every month to bask in our shared interests.
+                We are not a wine club. We are a community of people who love wine, and love life.
+                We come together every month to bask in our shared interests.
               </p>
             </div>
             <div className="card">
               <h3>A culture of sharing</h3>
               <p className="muted">
-                At The Cork Conclave, everyone shows up with a bottle, to give the others a glimpse into who you are. 
-                And along with that, we share stories and joy. 
+                At The Cork Conclave, everyone shows up with a bottle, to give the others a glimpse into who you are.
+                And along with that, we share stories and joy.
               </p>
             </div>
           </div>
