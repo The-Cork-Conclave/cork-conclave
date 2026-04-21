@@ -73,7 +73,6 @@ export default function RootLayout({
       <body className={`${inter.variable} ${playfair.variable}`}>
         <script
           type="application/ld+json"
-          // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
         <div className="site">

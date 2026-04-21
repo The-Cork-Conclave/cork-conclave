@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { site } from "@/lib/site";
+import { Suspense } from "react";
+import ActiveEventHero from "./_components/ActiveEventHero";
+import ActiveEventHeroSkeleton from "./_components/ActiveEventHeroSkeleton";
 
 export const metadata: Metadata = {
   title: "Home",
@@ -13,10 +16,6 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  const upcomingEvent = {
-    ticketLink: "https://houseofexplorers.com/discover/backtotheroots", // Replace with your actual ticket link
-  };
-
   // Preview gallery images from recent events
   const galleryPreview = [
     "IMG_0826.jpg",
@@ -66,43 +65,9 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="w-full flex flex-col md:flex-row gap-12 md:gap-4 items-center md:items-stretch justify-center 2xl:w-3/5">
-            <div className="event-image-card md:flex-1 xl:w-1/3 2xl:w-full 2xl:min-w-[400px]!">
-              <Image
-                src="/images/backtotheroots.jpeg"
-                alt="Back To The Roots"
-                fill
-                sizes="(max-width: 900px) 400px, 360px"
-                style={{ objectFit: 'cover' }}
-                priority
-                quality={90}
-              />
-            </div>
-
-            <div className="event-details-card md:flex-1 xl:w-1/3 2xl:w-full">
-              <span className="badge">Next Conclave</span>
-              <h2 className="section-title">
-                Back To The Roots
-              </h2>
-              <p className="muted">
-                Ransack your wardrobes, pull out your ólekús and your dànṣíkís, your agbádás and sọrọs, your ìrós and bùbá, and then come drink wine with the good people of The Cork Conclave.</p>
-              <ul>
-                <li>Saturday Apr 18, 4:00 PM</li>
-                <li>Palms Mall, Ring Road{site.contact.city}</li>
-                <li>Limited Spots Available</li>
-              </ul>
-              <div className="cta-row">
-                <a
-                  className="button"
-                  href={upcomingEvent.ticketLink}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Save Your Spot
-                </a>
-              </div>
-            </div>
-          </div>
+          <Suspense fallback={<ActiveEventHeroSkeleton />}>
+            <ActiveEventHero />
+          </Suspense>
         </div>
       </section>
 
