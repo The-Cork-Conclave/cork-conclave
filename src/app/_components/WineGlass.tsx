@@ -1,7 +1,7 @@
 export default function WineGlass() {
   return (
     <svg
-      className="pointer-events-none absolute top-20 left-[-5%] w-150 h-150 opacity-[0.02] mix-blend-screen text-white -rotate-12 z-0"
+      className="pointer-events-none fixed lg:absolute top-20 left-[-5%] w-150 h-150 opacity-[0.02] mix-blend-screen text-white -rotate-12 z-0"
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
