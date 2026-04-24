@@ -2,28 +2,22 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { site } from "@/lib/site";
+import { Suspense } from "react";
+import EventSkeleton from "./_components/EventSkeleton";
+import type { ElementType } from "react";
+import WineGlass from "./_components/WineGlass";
+import Event from "./_components/Event";
 
 export const metadata: Metadata = {
   title: "Home",
-  description:
-    "Discover curated cork tastings, salons, and artisan gatherings in Cork City.",
+  description: "Discover curated cork tastings, salons, and artisan gatherings in Cork City.",
   alternates: {
     canonical: site.url,
   },
 };
 
 export default function Home() {
-  const upcomingEvent = {
-    ticketLink: "https://houseofexplorers.com/discover/backtotheroots", // Replace with your actual ticket link
-  };
-
-  // Preview gallery images from recent events
-  const galleryPreview = [
-    "IMG_0826.jpg",
-    "DSC02319.jpg",
-    "20251115_175804.jpg",
-    "IMG_1329.JPG",
-  ].map((filename) => ({
+  const galleryPreview = ["IMG_0826.jpg", "DSC02319.jpg", "20251115_175804.jpg", "IMG_1329.JPG"].map((filename) => ({
     url: `/images/gallery/${filename}`,
     alt: `Cork Conclave moment`,
   }));
@@ -40,68 +34,48 @@ export default function Home() {
     },
   };
 
+  const IconifyIcon = "iconify-icon" as unknown as ElementType;
+
   return (
     <>
-      <script
-        type="application/ld+json"
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }} />
+      <WineGlass />
 
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
-      />
-      <section className="hero">
-        <div className="container flex flex-col xl:flex-row gap-12 items-center justify-center">
-          <div className="hero-intro w-full xl:w-1/3 2xl:w-2/5">
-            <h1 className="hero-title">The Cork Conclave</h1>
-            <p className="hero-subtitle">
-              A community of young people who use wine as an excuse to build a community. Join us monthly at fun evenings curated to ensure connection, enjoyment and relaxation.
-            </p>
-            <div className="cta-row">
-              <a
-                className="button"
-                href={site.socials.instagram}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Follow on Instagram
-              </a>
-            </div>
-          </div>
+      <section className="relative z-10 grow flex items-center py-12 lg:py-24">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+            <div className="lg:col-span-6 flex flex-col gap-7 order-1 relative z-10">
+              <div className="w-12 h-0.5 rounded-full bg-linear-to-r from-[#e86a5e] to-transparent opacity-80" />
 
-          <div className="w-full flex flex-col md:flex-row gap-12 md:gap-4 items-center md:items-stretch justify-center 2xl:w-3/5">
-            <div className="event-image-card md:flex-1 xl:w-1/3 2xl:w-full 2xl:min-w-[400px]!">
-              <Image
-                src="/images/backtotheroots.jpeg"
-                alt="Back To The Roots"
-                fill
-                sizes="(max-width: 900px) 400px, 360px"
-                style={{ objectFit: 'cover' }}
-                priority
-                quality={90}
-              />
-            </div>
+              <div className="flex flex-col gap-5">
+                <div className="inline-flex items-center gap-2 text-xs font-medium tracking-widest text-[#d1b3c4] uppercase">
+                  <IconifyIcon icon="solar:star-fall-linear" stroke-width="1.5" className="text-[#e86a5e] text-base" />
+                  Monthly wine-led social experiences
+                </div>
 
-            <div className="event-details-card md:flex-1 xl:w-1/3 2xl:w-full">
-              <span className="badge">Next Conclave</span>
-              <h2 className="section-title">
-                Back To The Roots
-              </h2>
-              <p className="muted">
-                Ransack your wardrobes, pull out your ólekús and your dànṣíkís, your agbádás and sọrọs, your ìrós and bùbá, and then come drink wine with the good people of The Cork Conclave.</p>
-              <ul>
-                <li>Saturday Apr 18, 4:00 PM</li>
-                <li>Palms Mall, Ring Road{site.contact.city}</li>
-                <li>Limited Spots Available</li>
-              </ul>
-              <div className="cta-row">
-                <a
-                  className="button"
-                  href={upcomingEvent.ticketLink}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Save Your Spot
+                <h1 className="text-5xl sm:text-6xl lg:text-[4.5rem] font-semibold tracking-tight text-white leading-[1.05]">
+                  The Cork <br className="hidden sm:block" />
+                  <span className="text-transparent bg-clip-text bg-linear-to-r from-[#f2e6ee] to-[#a37e94]">
+                    Conclave
+                  </span>
+                </h1>
+
+                <p className="text-lg text-[#bba1b1] leading-relaxed font-light max-w-xl">
+                  A community of young people who use wine as an excuse to build a community. Join us monthly at fun
+                  evenings curated to ensure connection, enjoyment and relaxation.
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 pt-2">
+                <a className="button" href={site.socials.instagram} target="_blank" rel="noreferrer">
+                  Follow on Instagram
                 </a>
               </div>
             </div>
+
+            <Suspense fallback={<EventSkeleton />}>
+              <Event />
+            </Suspense>
           </div>
         </div>
       </section>
@@ -121,14 +95,15 @@ export default function Home() {
             <div className="card">
               <h3>Wine and laughter</h3>
               <p className="muted">
-                Evenings filled with good wine to help you shrug off the stress and relax. Over here, we’re all about the good life.
+                Evenings filled with good wine to help you shrug off the stress and relax. Over here, we’re all about
+                the good life.
               </p>
             </div>
             <div className="card">
               <h3>Community</h3>
               <p className="muted">
-                We are not a wine club. We are a community of people who love wine, and love life.
-                We come together every month to bask in our shared interests.
+                We are not a wine club. We are a community of people who love wine, and love life. We come together
+                every month to bask in our shared interests.
               </p>
             </div>
             <div className="card">
@@ -161,8 +136,8 @@ export default function Home() {
                   alt={image.alt}
                   fill
                   sizes="(max-width: 640px) 50vw, 25vw"
-                  style={{ objectFit: 'cover' }}
-                  loading={index < 2 ? 'eager' : 'lazy'}
+                  style={{ objectFit: "cover" }}
+                  loading={index < 2 ? "eager" : "lazy"}
                   quality={85}
                 />
                 <div className="gallery-preview-overlay">
@@ -181,18 +156,12 @@ export default function Home() {
               <p className="eyebrow">Become part of the community</p>
               <h2 className="section-title">Join us at an event</h2>
               <p className="muted">
-                The Cork Conclave community is built on shared experiences.
-                Attend one of our gatherings to connect with fellow enthusiasts,
-                and become part of our inner circle.
+                The Cork Conclave community is built on shared experiences. Attend one of our gatherings to connect with
+                fellow enthusiasts, and become part of our inner circle.
               </p>
             </div>
             <div className="cta-row">
-              <a
-                className="button"
-                href={site.socials.instagram}
-                target="_blank"
-                rel="noreferrer"
-              >
+              <a className="button" href={site.socials.instagram} target="_blank" rel="noreferrer">
                 Follow on Instagram
               </a>
             </div>
