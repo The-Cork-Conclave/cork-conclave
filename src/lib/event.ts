@@ -1,5 +1,8 @@
 import "server-only";
 
+import { cache } from "react";
+import { isRegistrationCtaClosed } from "./registration-cta.server";
+
 export type ActiveEvent = {
   id: string;
   slug: string;
@@ -9,13 +12,16 @@ export type ActiveEvent = {
   created_by: string;
   amount_in_kobo: string;
   image_url?: string | null;
+  registration_opens_at?: string | null;
+  registration_closes_at?: string | null;
+  is_registration_cta_closed?: boolean;
 };
 
-export async function getActiveEvent(): Promise<ActiveEvent | null> {
+export const getActiveEvent = cache(async function getActiveEvent(): Promise<ActiveEvent | null> {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL?.trim();
   if (!baseUrl) return null;
 
-  const res = await fetch(`${baseUrl.replace(/\/$/, "")}/public/event/active`, {
+  const res = await fetch(`${baseUrl.replace(/\/$/, "")}/public/event`, {
     cache: "no-store",
   });
 
@@ -26,6 +32,9 @@ export async function getActiveEvent(): Promise<ActiveEvent | null> {
   const event = json.event;
   if (!event?.id || !event.slug) return null;
 
-  return event;
-}
+  return {
+    ...event,
+    is_registration_cta_closed: isRegistrationCtaClosed(event, Date.now()),
+  };
+});
 

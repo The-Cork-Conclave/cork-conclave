@@ -1,4 +1,4 @@
-export default function ActiveEventHeroSkeleton() {
+export default function EventSkeleton() {
   return (
     <div className="w-full flex flex-col md:flex-row gap-12 md:gap-4 items-center md:items-stretch justify-center 2xl:w-3/5 animate-pulse">
       <div className="event-image-card md:flex-1 xl:w-1/3 2xl:w-full 2xl:min-w-[400px]!">

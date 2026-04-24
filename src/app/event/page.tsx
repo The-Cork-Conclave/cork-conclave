@@ -1,6 +1,7 @@
 import Image from "next/image";
-import Link from "next/link";
+import { redirect } from "next/navigation";
 import { getActiveEvent } from "@/lib/event";
+import RegistrationForm from "./RegistrationForm";
 
 function formatDateParts(raw: string): { date: string; time: string } {
   const d = new Date(raw);
@@ -70,26 +71,8 @@ function MetaRow({
 
 export default async function Page() {
   const event = await getActiveEvent();
-
   if (!event) {
-    return (
-      <main className="section">
-        <div className="container">
-          <div className="card">
-            <p className="eyebrow">No active event</p>
-            <h1 className="section-title">Nothing to register for right now</h1>
-            <p className="muted" style={{ marginTop: 10 }}>
-              Check back soon for the next Cork Conclave gathering.
-            </p>
-            <div className="cta-row" style={{ marginTop: 18 }}>
-              <Link className="button outline" href="/">
-                Back home
-              </Link>
-            </div>
-          </div>
-        </div>
-      </main>
-    );
+    redirect("/");
   }
 
   const bannerUrl = (event.image_url ?? "").trim();
@@ -245,84 +228,7 @@ export default async function Page() {
               </p>
             </div>
 
-            <form className="space-y-5">
-              <div>
-                <label htmlFor="fullName" className="block text-sm font-medium mb-1.5" style={{ color: "var(--text)" }}>
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  id="fullName"
-                  placeholder="Jane Doe"
-                  className="w-full px-3.5 py-2.5 rounded-xl text-sm"
-                  style={{
-                    color: "var(--text)",
-                    background: "rgba(208, 192, 226, 0.06)",
-                    border: "1px solid var(--border)",
-                    outline: "none",
-                  }}
-                  required
-                />
-              </div>
-
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium mb-1.5" style={{ color: "var(--text)" }}>
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  placeholder="jane@example.com"
-                  className="w-full px-3.5 py-2.5 rounded-xl text-sm"
-                  style={{
-                    color: "var(--text)",
-                    background: "rgba(208, 192, 226, 0.06)",
-                    border: "1px solid var(--border)",
-                    outline: "none",
-                  }}
-                  required
-                />
-              </div>
-
-              <div>
-                <label htmlFor="phone" className="block text-sm font-medium mb-1.5" style={{ color: "var(--text)" }}>
-                  Phone Number
-                </label>
-                <input
-                  type="tel"
-                  id="phone"
-                  placeholder="+234 800 000 0000"
-                  className="w-full px-3.5 py-2.5 rounded-xl text-sm"
-                  style={{
-                    color: "var(--text)",
-                    background: "rgba(208, 192, 226, 0.06)",
-                    border: "1px solid var(--border)",
-                    outline: "none",
-                  }}
-                  required
-                />
-              </div>
-
-              <div className="pt-4">
-                <button type="button" className="w-full button justify-center cursor-pointer">
-                  Continue to Payment
-                  <svg
-                    aria-hidden="true"
-                    viewBox="0 0 24 24"
-                    width="16"
-                    height="16"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M5 12h14" />
-                    <path d="m13 5 7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
-            </form>
+            <RegistrationForm className="space-y-5" amountInKobo={event.amount_in_kobo} />
 
             <div className="mt-6 pt-6" style={{ borderTop: "1px solid var(--border)" }}>
               <div className="flex items-center justify-center gap-1.5 mb-2" style={{ color: "var(--muted)" }}>

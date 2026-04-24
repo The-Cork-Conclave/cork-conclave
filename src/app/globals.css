@@ -132,6 +132,14 @@ img {
   color: var(--muted);
 }
 
+.button_link {
+  color: color-mix(in oklab, var(--accent) 98%, black);
+  cursor: pointer !important;
+  background: transparent !important;
+  outline: none !important;
+  border: 0px !important;
+}
+
 .button {
   display: inline-flex;
   align-items: center;
@@ -142,7 +150,9 @@ img {
   color: #fff;
   font-weight: 600;
   border: 1px solid transparent;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
   box-shadow: 0 10px 30px rgba(253, 74, 74, 0.35);
 }
 
@@ -214,7 +224,6 @@ img {
   object-position: center;
   display: block;
 }
-
 
 .event-details-card {
   padding: 32px;
@@ -324,11 +333,7 @@ img {
 .gallery-tile {
   height: 220px;
   border-radius: var(--radius-md);
-  background: linear-gradient(
-    135deg,
-    rgba(208, 192, 226, 0.22),
-    rgba(253, 74, 74, 0.18)
-  );
+  background: linear-gradient(135deg, rgba(208, 192, 226, 0.22), rgba(253, 74, 74, 0.18));
   border: 1px solid rgba(208, 192, 226, 0.28);
 }
 
@@ -530,7 +535,9 @@ img {
   cursor: pointer;
   background: var(--surface);
   border: 1px solid var(--border);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .gallery-item:hover {
@@ -699,7 +706,9 @@ img {
   cursor: pointer;
   background: var(--surface);
   border: 1px solid var(--border);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   display: block;
 }
 
@@ -829,11 +838,7 @@ img {
   align-items: center;
   justify-content: center;
   border-radius: 12px;
-  background: linear-gradient(
-    135deg,
-    rgba(253, 74, 74, 0.15),
-    rgba(208, 192, 226, 0.15)
-  );
+  background: linear-gradient(135deg, rgba(253, 74, 74, 0.15), rgba(208, 192, 226, 0.15));
   border: 1px solid var(--border);
   color: var(--accent);
 }
@@ -891,7 +896,7 @@ img {
 }
 
 .social-icon-button.instagram {
-  background: linear-gradient(135deg, #833AB4 0%, #FD1D1D 50%, #F77737 100%);
+  background: linear-gradient(135deg, #833ab4 0%, #fd1d1d 50%, #f77737 100%);
   color: #fff;
   border-color: transparent;
 }
@@ -901,7 +906,7 @@ img {
 }
 
 .social-icon-button.tiktok {
-  background: linear-gradient(135deg, #000000 0%, #69C9D0 100%);
+  background: linear-gradient(135deg, #000000 0%, #69c9d0 100%);
   color: #fff;
   border-color: transparent;
 }
@@ -1070,7 +1075,6 @@ img {
     grid-template-columns: 1fr;
     gap: 40px;
   }
-  
 
   .hero-intro {
     min-height: auto;
@@ -1421,8 +1425,6 @@ img {
     padding: 24px;
   }
 }
-
-
 
 @media (max-width: 400px) {
   .hero {
