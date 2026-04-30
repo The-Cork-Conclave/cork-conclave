@@ -2,22 +2,8 @@ import { getActiveEvent } from "@/lib/event";
 import NoEvent from "./NoEvent";
 import { Calendar } from "lucide-react";
 import Image from "next/image";
+import { formatDateTime } from "@/lib/helpers";
 
-function formatEventDate(raw: string): string {
-  const d = new Date(raw);
-  if (Number.isNaN(d.getTime())) return raw;
-
-  const weekday = new Intl.DateTimeFormat("en-GB", { weekday: "long" }).format(d);
-  const month = new Intl.DateTimeFormat("en-GB", { month: "short" }).format(d);
-  const day = new Intl.DateTimeFormat("en-GB", { day: "2-digit" }).format(d);
-  const time = new Intl.DateTimeFormat("en-GB", {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  }).format(d);
-
-  return `${weekday} ${month} ${day}, ${time}`;
-}
 
 function formatNairaFromKoboString(amountInKobo: string): string {
   const kobo = Number.parseInt(amountInKobo, 10);
@@ -77,7 +63,7 @@ export default async function Event() {
                   <Calendar />
                 </div>
                 <span className="text-sm font-medium text-[#f2e6ee] leading-tight drop-shadow-sm">
-                  {formatEventDate(event.event_date)}
+                  {formatDateTime(event.event_date)}
                 </span>
               </div>
             </div>

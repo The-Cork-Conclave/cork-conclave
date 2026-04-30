@@ -1,30 +1,8 @@
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { getActiveEvent } from "@/lib/event";
+import { formatDateTime } from "@/lib/helpers";
 import RegistrationForm from "./RegistrationForm";
-
-function formatDateParts(raw: string): { date: string; time: string } {
-  const d = new Date(raw);
-  if (Number.isNaN(d.getTime())) {
-    return { date: raw, time: "" };
-  }
-
-  const date = new Intl.DateTimeFormat("en-GB", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  }).format(d);
-
-  const time = new Intl.DateTimeFormat("en-GB", {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-    timeZoneName: "short",
-  }).format(d);
-
-  return { date, time };
-}
 
 function formatNairaFromKoboString(amountInKobo: string): string {
   const kobo = Number.parseInt(amountInKobo, 10);
@@ -76,7 +54,7 @@ export default async function Page() {
   }
 
   const bannerUrl = (event.image_url ?? "").trim();
-  const { date, time } = formatDateParts(event.event_date);
+  const dateTime = formatDateTime(event.event_date);
   const price = formatNairaFromKoboString(event.amount_in_kobo);
 
   return (
@@ -142,7 +120,7 @@ export default async function Page() {
               {/* Meta Details */}
               <div className="space-y-5">
                 <MetaRow
-                  title={date}
+                  title="Date"
                   icon={
                     <svg
                       aria-hidden="true"
@@ -162,7 +140,7 @@ export default async function Page() {
                     </svg>
                   }
                 >
-                  {time || "—"}
+                  {dateTime}
                 </MetaRow>
 
                 <MetaRow
