@@ -287,6 +287,13 @@ function EventTicketPageInner() {
       onWineAdded: () => {
         void loadWines({ selectNewest: true, toastNewest: true });
       },
+      onWineUpdated: (payload) => {
+        void loadWines();
+        void fetchPublicEventWineDetail(eventId, payload.event_wine_id, ticketToken).then((detail) => {
+          if (!detail.ok) return;
+          setWineDetail((prev) => (prev?.event_wine_id === payload.event_wine_id ? detail.data : prev));
+        });
+      },
       onWineReviewed: (payload) => {
         setWines((prev) =>
           prev.map((w) => {

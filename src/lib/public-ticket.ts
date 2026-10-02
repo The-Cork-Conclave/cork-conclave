@@ -177,6 +177,7 @@ export type WineReviewedSSEPayload = {
 
 export type PublicEventStreamHandlers = {
   onWineAdded?: (payload: WineAddedSSEPayload) => void;
+  onWineUpdated?: (payload: WineAddedSSEPayload) => void;
   onWineReviewed?: (payload: WineReviewedSSEPayload) => void;
 };
 
@@ -201,6 +202,10 @@ export function subscribePublicEventStream(
   es.addEventListener("wine_added", (ev) => {
     const data = parse<WineAddedSSEPayload>((ev as MessageEvent).data);
     if (data) handlers.onWineAdded?.(data);
+  });
+  es.addEventListener("wine_updated", (ev) => {
+    const data = parse<WineAddedSSEPayload>((ev as MessageEvent).data);
+    if (data) handlers.onWineUpdated?.(data);
   });
   es.addEventListener("wine_reviewed", (ev) => {
     const data = parse<WineReviewedSSEPayload>((ev as MessageEvent).data);
