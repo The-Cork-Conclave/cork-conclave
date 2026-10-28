@@ -29,7 +29,7 @@ function newShirt(product: MerchProduct, index: number): ShirtDraft {
     name: "",
     email: "",
     phone: "",
-    colorLabel: product.colors[0]?.label ?? "",
+    colorLabel: product.colors[0] ?? "",
     size: product.sizes[0] ?? "",
     fulfillment: "pickup",
     address: "",
@@ -234,25 +234,20 @@ export function MerchCheckout({ product }: Props) {
             <div>
               <p className="mb-2 text-xs text-cork-blush">Color</p>
               <div className="flex flex-wrap gap-2">
-                {product.colors.map((c) => {
-                  const selected = shirt.colorLabel === c.label;
+                {product.colors.map((color) => {
+                  const selected = shirt.colorLabel === color;
                   return (
                     <button
-                      key={`${c.label}-${c.value}`}
+                      key={color}
                       type="button"
-                      onClick={() => updateShirt(shirt.id, { colorLabel: c.label })}
-                      className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs ${
+                      onClick={() => updateShirt(shirt.id, { colorLabel: color })}
+                      className={`rounded-md border px-3 py-1.5 text-xs ${
                         selected
                           ? "border-cork-coral text-cork-cream"
                           : "border-white/15 text-cork-blush hover:border-cork-coral/50"
                       }`}
                     >
-                      <span
-                        className="size-3 rounded-full border border-white/20"
-                        style={{ backgroundColor: c.value }}
-                        aria-hidden
-                      />
-                      {c.label}
+                      {color}
                     </button>
                   );
                 })}

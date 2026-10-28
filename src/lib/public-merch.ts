@@ -2,11 +2,6 @@ import { cache } from "react";
 
 import { getPublicApiBaseUrl, safeFetchJson } from "@/lib/api-client";
 
-export type MerchColor = {
-  label: string;
-  value: string;
-};
-
 export type MerchProduct = {
   id: string;
   name: string;
@@ -15,7 +10,7 @@ export type MerchProduct = {
   price_in_kobo: number;
   delivery_fee_in_kobo: number;
   pickup_location: string;
-  colors: MerchColor[];
+  colors: string[];
   sizes: string[];
   is_active: boolean;
   created_at: string;
