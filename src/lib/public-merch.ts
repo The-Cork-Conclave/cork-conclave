@@ -22,6 +22,7 @@ export type MerchProductsResponse = {
 
 export type MerchCheckoutItem = {
   product_id: string;
+  quantity?: number;
   recipient_name: string;
   recipient_email?: string;
   recipient_phone: string;
