@@ -11,18 +11,29 @@ import {
   type MerchProduct,
 } from "@/lib/public-merch";
 
+type ShirtUnit = {
+  id: string;
+  colorLabel: string;
+  size: string;
+};
+
 type CartLine = {
   id: string;
   productId: string;
-  quantity: number;
   name: string;
   email: string;
   phone: string;
-  colorLabel: string;
-  size: string;
   fulfillment: "pickup" | "delivery";
   address: string;
   note: string;
+  units: ShirtUnit[];
+};
+
+type StoredCartLine = Partial<CartLine> & {
+  productId?: string;
+  quantity?: number;
+  colorLabel?: string;
+  size?: string;
 };
 
 const CART_KEY = "cork-merch-cart";
@@ -41,41 +52,86 @@ function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+function newUnit(product: MerchProduct, index: number): ShirtUnit {
+  return {
+    id: `${product.id}-unit-${Date.now()}-${index}`,
+    colorLabel: product.colors[0] ?? "",
+    size: product.sizes[0] ?? "",
+  };
+}
+
 function newLine(product: MerchProduct): CartLine {
   return {
     id: `${product.id}-${Date.now()}`,
     productId: product.id,
-    quantity: 1,
     name: "",
     email: "",
     phone: "",
-    colorLabel: product.colors[0] ?? "",
-    size: product.sizes[0] ?? "",
     fulfillment: "pickup",
     address: "",
     note: "",
+    units: [newUnit(product, 0)],
   };
 }
 
-function sanitizeLine(line: CartLine, product: MerchProduct | undefined, index: number): CartLine | null {
-  if (!product) return null;
-  const colorLabel = product.colors.includes(line.colorLabel)
-    ? line.colorLabel
-    : (product.colors[0] ?? "");
-  const size = product.sizes.includes(line.size) ? line.size : (product.sizes[0] ?? "");
-  const quantity = Math.min(20, Math.max(1, Math.trunc(Number(line.quantity) || 1)));
+function sanitizeUnit(
+  unit: Partial<ShirtUnit> | undefined,
+  product: MerchProduct,
+  index: number,
+): ShirtUnit {
+  const colorLabel =
+    unit && typeof unit.colorLabel === "string" && product.colors.includes(unit.colorLabel)
+      ? unit.colorLabel
+      : (product.colors[0] ?? "");
+  const size =
+    unit && typeof unit.size === "string" && product.sizes.includes(unit.size)
+      ? unit.size
+      : (product.sizes[0] ?? "");
+  return {
+    id:
+      unit && typeof unit.id === "string" && unit.id
+        ? unit.id
+        : `${product.id}-unit-${index}`,
+    colorLabel,
+    size,
+  };
+}
+
+function sanitizeLine(line: StoredCartLine, product: MerchProduct | undefined, index: number): CartLine | null {
+  if (!product || typeof line.productId !== "string") return null;
+
+  let units: ShirtUnit[] = [];
+  if (Array.isArray(line.units) && line.units.length > 0) {
+    units = line.units.slice(0, 20).map((unit, unitIndex) => sanitizeUnit(unit, product, unitIndex));
+  } else {
+    const quantity = Math.min(20, Math.max(1, Math.trunc(Number(line.quantity) || 1)));
+    const legacyColor =
+      typeof line.colorLabel === "string" && product.colors.includes(line.colorLabel)
+        ? line.colorLabel
+        : (product.colors[0] ?? "");
+    const legacySize =
+      typeof line.size === "string" && product.sizes.includes(line.size)
+        ? line.size
+        : (product.sizes[0] ?? "");
+    for (let i = 0; i < quantity; i++) {
+      units.push({
+        id: `${product.id}-unit-${index}-${i}`,
+        colorLabel: legacyColor,
+        size: legacySize,
+      });
+    }
+  }
+
   return {
     id: typeof line.id === "string" && line.id ? line.id : `${product.id}-${index}`,
     productId: product.id,
-    quantity,
     name: typeof line.name === "string" ? line.name : "",
     email: typeof line.email === "string" ? line.email : "",
     phone: typeof line.phone === "string" ? line.phone : "",
-    colorLabel,
-    size,
     fulfillment: line.fulfillment === "delivery" ? "delivery" : "pickup",
     address: typeof line.address === "string" ? line.address : "",
     note: typeof line.note === "string" ? line.note : "",
+    units,
   };
 }
 
@@ -83,13 +139,13 @@ function loadCart(products: MerchProduct[]): CartLine[] {
   try {
     const raw = window.localStorage.getItem(CART_KEY);
     if (!raw) return [];
-    const parsed = JSON.parse(raw) as { lines?: CartLine[] };
+    const parsed = JSON.parse(raw) as { lines?: StoredCartLine[] };
     if (!Array.isArray(parsed.lines)) return [];
     const byId = new Map(products.map((p) => [p.id, p]));
     const lines: CartLine[] = [];
     for (let i = 0; i < parsed.lines.length; i++) {
       const line = parsed.lines[i];
-      const cleaned = sanitizeLine(line, byId.get(line.productId), i);
+      const cleaned = sanitizeLine(line, byId.get(line.productId ?? ""), i);
       if (cleaned) lines.push(cleaned);
     }
     return lines;
@@ -131,7 +187,7 @@ function estimateTotal(lines: CartLine[], productsById: Map<string, MerchProduct
     const line = lines[i];
     const product = productsById.get(line.productId);
     if (!product) continue;
-    total += product.price_in_kobo * line.quantity;
+    total += product.price_in_kobo * line.units.length;
     if (line.fulfillment === "delivery") {
       const key = normalizeAddress(line.address);
       if (!key) continue;
@@ -181,7 +237,7 @@ export function MerchCheckout({ products, paymentSuccess = false }: Props) {
   }, [draftReady, lines]);
 
   const totalUnits = useMemo(
-    () => lines.reduce((sum, line) => sum + line.quantity, 0),
+    () => lines.reduce((sum, line) => sum + line.units.length, 0),
     [lines],
   );
   const totalKobo = useMemo(() => estimateTotal(lines, productsById), [lines, productsById]);
@@ -193,18 +249,31 @@ export function MerchCheckout({ products, paymentSuccess = false }: Props) {
     setLines((prev) => prev.map((line) => (line.id === id ? { ...line, ...patch } : line)));
   }
 
+  function updateUnit(lineId: string, unitId: string, patch: Partial<ShirtUnit>) {
+    setLines((prev) =>
+      prev.map((line) => {
+        if (line.id !== lineId) return line;
+        return {
+          ...line,
+          units: line.units.map((unit) => (unit.id === unitId ? { ...unit, ...patch } : unit)),
+        };
+      }),
+    );
+  }
+
   function addDesign(product: MerchProduct) {
     setLines((prev) => {
-      const units = prev.reduce((sum, line) => sum + line.quantity, 0);
+      const units = prev.reduce((sum, line) => sum + line.units.length, 0);
       const existing = prev.find((line) => line.productId === product.id);
       if (existing) {
-        const nextQty = Math.min(20, existing.quantity + 1);
-        if (units - existing.quantity + nextQty > 20) {
+        if (units >= 20) {
           toast.error("You can order at most 20 shirts.");
           return prev;
         }
         return prev.map((line) =>
-          line.id === existing.id ? { ...line, quantity: nextQty } : line,
+          line.id === existing.id
+            ? { ...line, units: [...line.units, newUnit(product, line.units.length)] }
+            : line,
         );
       }
       if (units >= 20) {
@@ -216,17 +285,34 @@ export function MerchCheckout({ products, paymentSuccess = false }: Props) {
     setPickingDesign(false);
   }
 
-  function setQuantity(id: string, quantity: number) {
+  function setQuantity(lineId: string, quantity: number) {
     const next = Math.min(20, Math.max(1, quantity));
     setLines((prev) => {
-      const current = prev.find((line) => line.id === id);
+      const current = prev.find((line) => line.id === lineId);
       if (!current) return prev;
-      const others = prev.reduce((sum, line) => sum + line.quantity, 0) - current.quantity;
+      const product = productsById.get(current.productId);
+      if (!product) return prev;
+      const others = prev.reduce((sum, line) => sum + line.units.length, 0) - current.units.length;
       if (others + next > 20) {
         toast.error("You can order at most 20 shirts.");
         return prev;
       }
-      return prev.map((line) => (line.id === id ? { ...line, quantity: next } : line));
+      let units = current.units;
+      if (next > units.length) {
+        const added: ShirtUnit[] = [];
+        for (let i = units.length; i < next; i++) {
+          const last = units[units.length - 1];
+          added.push({
+            id: `${product.id}-unit-${Date.now()}-${i}`,
+            colorLabel: last?.colorLabel || product.colors[0] || "",
+            size: last?.size || product.sizes[0] || "",
+          });
+        }
+        units = [...units, ...added];
+      } else if (next < units.length) {
+        units = units.slice(0, next);
+      }
+      return prev.map((line) => (line.id === lineId ? { ...line, units } : line));
     });
   }
 
@@ -247,8 +333,13 @@ export function MerchCheckout({ products, paymentSuccess = false }: Props) {
       } else if (line.email.trim() && !isValidEmail(line.email.trim())) {
         return `${label}: enter a valid email or leave blank to use the first.`;
       }
-      if (!line.colorLabel) return `${label}: choose a color.`;
-      if (!line.size) return `${label}: choose a size.`;
+      if (line.units.length < 1) return `${label}: add at least one shirt.`;
+      for (let u = 0; u < line.units.length; u++) {
+        const unit = line.units[u];
+        const unitLabel = line.units.length > 1 ? `${label} · shirt ${u + 1}` : label;
+        if (!unit.colorLabel) return `${unitLabel}: choose a color.`;
+        if (!unit.size) return `${unitLabel}: choose a size.`;
+      }
       if (line.fulfillment === "delivery" && !line.address.trim()) {
         return `${label}: enter a delivery address.`;
       }
@@ -265,24 +356,29 @@ export function MerchCheckout({ products, paymentSuccess = false }: Props) {
       return;
     }
 
-    const items: MerchCheckoutItem[] = lines.map((line, i) => {
+    const items: MerchCheckoutItem[] = [];
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
       const email = line.email.trim().toLowerCase();
-      const item: MerchCheckoutItem = {
-        product_id: line.productId,
-        quantity: line.quantity,
-        recipient_name: line.name.trim(),
-        recipient_phone: line.phone.trim(),
-        color_label: line.colorLabel,
-        size: line.size,
-        fulfillment_type: line.fulfillment,
-        delivery_address: line.fulfillment === "delivery" ? line.address.trim() : null,
-        delivery_note: line.fulfillment === "delivery" && line.note.trim() ? line.note.trim() : null,
-      };
-      if (i === 0 || email) {
-        item.recipient_email = email;
+      for (let u = 0; u < line.units.length; u++) {
+        const unit = line.units[u];
+        const item: MerchCheckoutItem = {
+          product_id: line.productId,
+          quantity: 1,
+          recipient_name: line.name.trim(),
+          recipient_phone: line.phone.trim(),
+          color_label: unit.colorLabel,
+          size: unit.size,
+          fulfillment_type: line.fulfillment,
+          delivery_address: line.fulfillment === "delivery" ? line.address.trim() : null,
+          delivery_note: line.fulfillment === "delivery" && line.note.trim() ? line.note.trim() : null,
+        };
+        if ((i === 0 && u === 0) || email) {
+          item.recipient_email = email;
+        }
+        items.push(item);
       }
-      return item;
-    });
+    }
 
     const toastId = toast.loading("Creating checkout…");
     setIsSubmitting(true);
@@ -348,7 +444,7 @@ export function MerchCheckout({ products, paymentSuccess = false }: Props) {
       <div>
         <h1 className="font-display text-3xl text-cork-cream md:text-4xl">Your order</h1>
         <p className="mt-2 text-sm text-cork-blush">
-          Quantity for the same design. Add another design for a different shirt.
+          Set color and size for each shirt. Add another design for a different print.
         </p>
       </div>
 
@@ -389,17 +485,19 @@ export function MerchCheckout({ products, paymentSuccess = false }: Props) {
                     <span className="text-xs text-cork-blush">Qty</span>
                     <button
                       type="button"
-                      onClick={() => setQuantity(line.id, line.quantity - 1)}
-                      disabled={line.quantity <= 1}
+                      onClick={() => setQuantity(line.id, line.units.length - 1)}
+                      disabled={line.units.length <= 1}
                       className="rounded-md border border-white/15 p-1.5 text-cork-blush disabled:opacity-40"
                       aria-label="Decrease quantity"
                     >
                       <Minus className="size-3.5" />
                     </button>
-                    <span className="min-w-6 text-center text-sm text-cork-cream">{line.quantity}</span>
+                    <span className="min-w-6 text-center text-sm text-cork-cream">
+                      {line.units.length}
+                    </span>
                     <button
                       type="button"
-                      onClick={() => setQuantity(line.id, line.quantity + 1)}
+                      onClick={() => setQuantity(line.id, line.units.length + 1)}
                       className="rounded-md border border-white/15 p-1.5 text-cork-blush"
                       aria-label="Increase quantity"
                     >
@@ -449,50 +547,65 @@ export function MerchCheckout({ products, paymentSuccess = false }: Props) {
                   </label>
                 </div>
 
-                <div>
-                  <p className="mb-2 text-xs text-cork-blush">Color</p>
-                  <div className="flex flex-wrap gap-2">
-                    {product.colors.map((color) => {
-                      const selected = line.colorLabel === color;
-                      return (
-                        <button
-                          key={color}
-                          type="button"
-                          onClick={() => updateLine(line.id, { colorLabel: color })}
-                          className={`rounded-md border px-3 py-1.5 text-xs ${
-                            selected
-                              ? "border-cork-coral text-cork-cream"
-                              : "border-white/15 text-cork-blush hover:border-cork-coral/50"
-                          }`}
-                        >
-                          {color}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div>
-                  <p className="mb-2 text-xs text-cork-blush">Size</p>
-                  <div className="flex flex-wrap gap-2">
-                    {product.sizes.map((size) => {
-                      const selected = line.size === size;
-                      return (
-                        <button
-                          key={size}
-                          type="button"
-                          onClick={() => updateLine(line.id, { size })}
-                          className={`min-w-10 rounded-md border px-3 py-1.5 text-xs ${
-                            selected
-                              ? "border-cork-coral text-cork-cream"
-                              : "border-white/15 text-cork-blush hover:border-cork-coral/50"
-                          }`}
-                        >
-                          {size}
-                        </button>
-                      );
-                    })}
-                  </div>
+                <div className="space-y-3">
+                  {line.units.map((unit, unitIndex) => (
+                    <div
+                      key={unit.id}
+                      className="space-y-3 rounded-lg border border-white/10 bg-cork-plum/40 p-3"
+                    >
+                      {line.units.length > 1 ? (
+                        <p className="text-xs font-medium text-cork-cream">
+                          Shirt {unitIndex + 1}
+                        </p>
+                      ) : null}
+                      <div>
+                        <p className="mb-2 text-xs text-cork-blush">Color</p>
+                        <div className="flex flex-wrap gap-2">
+                          {product.colors.map((color) => {
+                            const selected = unit.colorLabel === color;
+                            return (
+                              <button
+                                key={color}
+                                type="button"
+                                onClick={() =>
+                                  updateUnit(line.id, unit.id, { colorLabel: color })
+                                }
+                                className={`rounded-md border px-3 py-1.5 text-xs ${
+                                  selected
+                                    ? "border-cork-coral text-cork-cream"
+                                    : "border-white/15 text-cork-blush hover:border-cork-coral/50"
+                                }`}
+                              >
+                                {color}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                      <div>
+                        <p className="mb-2 text-xs text-cork-blush">Size</p>
+                        <div className="flex flex-wrap gap-2">
+                          {product.sizes.map((size) => {
+                            const selected = unit.size === size;
+                            return (
+                              <button
+                                key={size}
+                                type="button"
+                                onClick={() => updateUnit(line.id, unit.id, { size })}
+                                className={`min-w-10 rounded-md border px-3 py-1.5 text-xs ${
+                                  selected
+                                    ? "border-cork-coral text-cork-cream"
+                                    : "border-white/15 text-cork-blush hover:border-cork-coral/50"
+                                }`}
+                              >
+                                {size}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
 
                 <div>
@@ -604,8 +717,6 @@ export function MerchCheckout({ products, paymentSuccess = false }: Props) {
           </p>
           <p className="mt-1 text-xs text-cork-blush">
             {totalUnits} shirt{totalUnits === 1 ? "" : "s"}
-            {" · "}
-            delivery charged once per address
           </p>
         </div>
         <button
