@@ -6,10 +6,11 @@ import { usePathname } from "next/navigation";
 import { app_routes } from "@/lib/constants";
 import Logo from "./icons/Logo";
 
-const navLinks = [
+const baseNavLinks: { href: string; label: string; merchOnly?: boolean }[] = [
   { href: app_routes.about, label: "About" },
   { href: app_routes.gallery, label: "Gallery" },
   { href: app_routes.wines, label: "Wines" },
+  { href: app_routes.merch, label: "Merch", merchOnly: true },
   { href: app_routes.past_conclaves, label: "Past Conclaves" },
   { href: app_routes.contact, label: "Contact" },
 ];
@@ -19,8 +20,13 @@ function isNavActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export default function Header() {
+type HeaderProps = {
+  showMerch?: boolean;
+};
+
+export default function Header({ showMerch = false }: HeaderProps) {
   const pathname = usePathname() ?? "/";
+  const navLinks = baseNavLinks.filter((link) => !link.merchOnly || showMerch);
 
   return (
     <header className="fixed top-0 z-40 w-full border-b border-white/5 bg-cork-plum/80 backdrop-blur-md">
@@ -67,6 +73,11 @@ export default function Header() {
               <Link href={app_routes.wines} className="hover:text-cork-cream">
                 Wines
               </Link>
+              {showMerch ? (
+                <Link href={app_routes.merch} className="hover:text-cork-cream">
+                  Merch
+                </Link>
+              ) : null}
               <Link href={app_routes.contact} className="hover:text-cork-cream">
                 Contact
               </Link>

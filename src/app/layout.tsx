@@ -8,6 +8,7 @@ import { site } from "@/lib/site";
 import Header from "@/_components/Header";
 import Footer from "@/_components/Footer";
 import WineGlass from "@/_components/WineGlass";
+import { hasPublicMerch } from "@/lib/public-merch";
 import Providers from "./providers";
 import { Toaster } from "react-hot-toast";
 
@@ -48,11 +49,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const showMerch = await hasPublicMerch();
+
   const organizationJsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -88,7 +91,7 @@ export default function RootLayout({
           <div className="pointer-events-none fixed inset-0 -z-10" aria-hidden>
             <WineGlass />
           </div>
-          <Header />
+          <Header showMerch={showMerch} />
           <main className="grow pt-20">{children}</main>
 
           <Footer />
