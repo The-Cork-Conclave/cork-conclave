@@ -3,7 +3,9 @@ export type ApiErr = { ok: false; error: string; status?: number };
 export type ApiResult<T> = ApiOk<T> | ApiErr;
 
 export function getPublicApiBaseUrl(): string {
-  return (process.env.NEXT_PUBLIC_API_URL ?? "").trim().replace(/\/$/, "");
+  // Server-side prefer API_URL — LAN NEXT_PUBLIC hosts often time out from Node.
+  const serverUrl = typeof window === "undefined" ? process.env.API_URL : undefined;
+  return (serverUrl || process.env.NEXT_PUBLIC_API_URL || "").trim().replace(/\/$/, "");
 }
 
 export async function safeFetchJson<T>(

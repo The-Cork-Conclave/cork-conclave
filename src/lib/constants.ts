@@ -4,6 +4,7 @@ export const app_routes = {
   event: "/event",
   gallery: "/gallery",
   wines: "/wines",
+  merch: "/merch",
   contact: "/contact",
   past_conclaves: "/conclaves",
 };
