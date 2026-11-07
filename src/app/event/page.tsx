@@ -1,9 +1,10 @@
 import Image from "next/image";
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { getActiveEvent, getActiveEventQuestions } from "@/lib/event";
 import { EVENT_DISPLAY_TIMEZONE } from "@/lib/timezone";
 import InviteRegistrationPanel from "./InviteRegistrationPanel";
+import { PaymentSuccessCelebration } from "./PaymentSuccessCelebration";
 import RegistrationPanel from "./RegistrationPanel";
 
 function formatNairaFromKoboString(amountInKobo: string): string {
@@ -65,6 +66,9 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ i
 
   return (
     <main className="relative z-10 grow flex flex-col justify-center py-6 lg:py-12 px-4 sm:px-6 lg:px-8">
+      <Suspense fallback={null}>
+        <PaymentSuccessCelebration />
+      </Suspense>
       <div
         className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[min(1200px,100vw)] h-200 bg-linear-to-b from-[#3a1018]/30 via-[#2b1d2e]/10 to-transparent blur-[120px]"
         aria-hidden
