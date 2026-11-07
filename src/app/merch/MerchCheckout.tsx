@@ -1,10 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { Loader2, Minus, Plus, Trash2 } from "lucide-react";
+import PhoneInput, { isValidPhoneNumber, type Value as PhoneValue } from "react-phone-number-input";
 
+import { celebratePaymentSuccess } from "@/lib/celebrate-payment-success";
 import {
   createMerchCheckout,
   type MerchCheckoutItem,
@@ -206,35 +209,56 @@ function estimateTotal(lines: CartLine[], productsById: Map<string, MerchProduct
 
 type Props = {
   products: MerchProduct[];
-  paymentSuccess?: boolean;
 };
 
-export function MerchCheckout({ products, paymentSuccess = false }: Props) {
+const phoneShellStyle: CSSProperties = {
+  color: "#f5ebe0",
+  background: "rgba(61, 28, 45, 0.6)",
+  border: "1px solid rgba(255,255,255,0.1)",
+  ["--PhoneInput-color--focus" as keyof CSSProperties]: "#ff6b6b",
+  ["--PhoneInputCountryFlag-borderColor" as keyof CSSProperties]: "rgba(255,255,255,0.15)",
+  ["--PhoneInputCountryFlag-borderColor--focus" as keyof CSSProperties]: "#ff6b6b",
+  ["--PhoneInputCountrySelectArrow-color" as keyof CSSProperties]: "rgba(245,235,224,0.6)",
+  ["--PhoneInputCountrySelectArrow-color--focus" as keyof CSSProperties]: "#f5ebe0",
+};
+
+export function MerchCheckout({ products }: Props) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const handledSuccess = useRef(false);
   const [lines, setLines] = useState<CartLine[]>([]);
   const [draftReady, setDraftReady] = useState(false);
+  const [wipingSuccess, setWipingSuccess] = useState(false);
   const [pickingDesign, setPickingDesign] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const productsById = useMemo(() => new Map(products.map((p) => [p.id, p])), [products]);
 
   useEffect(() => {
-    if (paymentSuccess) {
-      clearMerchDrafts();
-      setLines([]);
-      toast.success("Payment received. Thanks for your order!");
-      window.history.replaceState({}, "", "/merch");
-    } else {
-      setLines(loadCart(products));
+    if (searchParams.get("success") === "true") {
+      if (!handledSuccess.current) {
+        handledSuccess.current = true;
+        setWipingSuccess(true);
+        clearMerchDrafts();
+        setLines([]);
+        celebratePaymentSuccess("Payment received. Thanks for your order!");
+        router.replace("/merch");
+      }
+      setDraftReady(true);
+      return;
     }
+    if (handledSuccess.current) {
+      setDraftReady(true);
+      return;
+    }
+    setLines(loadCart(products));
     setDraftReady(true);
-    // Success wipe runs once on mount; product list is SSR-stable for this page.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [products, router, searchParams]);
 
   useEffect(() => {
-    if (!draftReady) return;
+    if (!draftReady || wipingSuccess) return;
     saveCart(lines);
-  }, [draftReady, lines]);
+  }, [draftReady, lines, wipingSuccess]);
 
   const totalUnits = useMemo(
     () => lines.reduce((sum, line) => sum + line.units.length, 0),
@@ -326,6 +350,7 @@ export function MerchCheckout({ products, paymentSuccess = false }: Props) {
       if (!product) return `${label}: product is no longer available.`;
       if (!line.name.trim()) return `${label}: enter a name.`;
       if (!line.phone.trim()) return `${label}: enter a phone number.`;
+      if (!isValidPhoneNumber(line.phone)) return `${label}: enter a valid phone number.`;
       if (i === 0) {
         if (!line.email.trim() || !isValidEmail(line.email.trim())) {
           return `${label}: enter a valid email.`;
@@ -455,17 +480,17 @@ export function MerchCheckout({ products, paymentSuccess = false }: Props) {
           return (
             <div
               key={line.id}
-              className="grid gap-6 rounded-xl border border-white/10 bg-cork-plum-light/30 p-4 md:grid-cols-[12rem_1fr] md:p-5"
+              className="grid gap-5 rounded-xl border border-white/10 bg-cork-plum-light/30 p-4 md:grid-cols-[18rem_1fr] md:gap-6 md:p-5"
             >
               <div className="space-y-3">
-                <div className="relative mx-auto aspect-square w-full max-w-[12rem] overflow-hidden rounded-xl bg-cork-plum-light/40">
+                <div className="relative mx-auto aspect-square w-full max-w-[18rem] overflow-hidden rounded-xl bg-cork-plum-light/40">
                   {product.image_url ? (
                     <Image
                       src={product.image_url}
                       alt={product.name}
                       fill
                       className="object-cover"
-                      sizes="12rem"
+                      sizes="18rem"
                       unoptimized
                       priority={index === 0}
                     />
@@ -479,7 +504,7 @@ export function MerchCheckout({ products, paymentSuccess = false }: Props) {
                 </div>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="inline-flex items-center gap-2">
                     <span className="text-xs text-cork-blush">Qty</span>
@@ -516,32 +541,44 @@ export function MerchCheckout({ products, paymentSuccess = false }: Props) {
                   ) : null}
                 </div>
 
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <label className="block text-xs text-cork-blush">
+                <div className="grid gap-2.5 sm:grid-cols-2">
+                  <label className="block text-[11px] text-cork-blush">
                     Name
                     <input
                       value={line.name}
                       onChange={(e) => updateLine(line.id, { name: e.target.value })}
-                      className="mt-1 w-full rounded-md border border-white/10 bg-cork-plum/60 px-3 py-2 text-sm text-cork-cream outline-none focus:border-cork-coral"
+                      className="mt-1 w-full rounded-md border border-white/10 bg-cork-plum/60 px-2.5 py-1.5 text-xs text-cork-cream outline-none focus:border-cork-coral"
                       autoComplete="name"
                     />
                   </label>
-                  <label className="block text-xs text-cork-blush">
+                  <label className="block text-[11px] text-cork-blush">
                     Phone
-                    <input
-                      value={line.phone}
-                      onChange={(e) => updateLine(line.id, { phone: e.target.value })}
-                      className="mt-1 w-full rounded-md border border-white/10 bg-cork-plum/60 px-3 py-2 text-sm text-cork-cream outline-none focus:border-cork-coral"
-                      autoComplete="tel"
-                    />
+                    <div
+                      className="mt-1 w-full rounded-md px-2.5 py-1.5 text-xs"
+                      style={phoneShellStyle}
+                    >
+                      <PhoneInput
+                        international
+                        defaultCountry="NG"
+                        placeholder="Enter phone number"
+                        value={(line.phone || undefined) as PhoneValue | undefined}
+                        onChange={(value) => updateLine(line.id, { phone: value ?? "" })}
+                        autoComplete="tel"
+                        numberInputProps={{
+                          required: true,
+                          className:
+                            "w-full bg-transparent text-xs text-cork-cream outline-none border-0 p-0 focus:ring-0 focus:outline-none placeholder:text-cork-blush/70",
+                        }}
+                      />
+                    </div>
                   </label>
-                  <label className="block text-xs text-cork-blush sm:col-span-2">
+                  <label className="block text-[11px] text-cork-blush sm:col-span-2">
                     Email{index === 0 ? "" : " (optional — uses first if blank)"}
                     <input
                       type="email"
                       value={line.email}
                       onChange={(e) => updateLine(line.id, { email: e.target.value })}
-                      className="mt-1 w-full rounded-md border border-white/10 bg-cork-plum/60 px-3 py-2 text-sm text-cork-cream outline-none focus:border-cork-coral"
+                      className="mt-1 w-full rounded-md border border-white/10 bg-cork-plum/60 px-2.5 py-1.5 text-xs text-cork-cream outline-none focus:border-cork-coral"
                       autoComplete="email"
                     />
                   </label>
@@ -643,23 +680,23 @@ export function MerchCheckout({ products, paymentSuccess = false }: Props) {
                 ) : null}
 
                 {line.fulfillment === "delivery" ? (
-                  <div className="grid gap-3">
-                    <label className="block text-xs text-cork-blush">
+                  <div className="grid gap-2.5">
+                    <label className="block text-[11px] text-cork-blush">
                       Delivery address
                       <textarea
                         value={line.address}
                         onChange={(e) => updateLine(line.id, { address: e.target.value })}
                         rows={2}
-                        className="mt-1 w-full rounded-md border border-white/10 bg-cork-plum/60 px-3 py-2 text-sm text-cork-cream outline-none focus:border-cork-coral"
+                        className="mt-1 w-full rounded-md border border-white/10 bg-cork-plum/60 px-2.5 py-1.5 text-xs text-cork-cream outline-none focus:border-cork-coral"
                       />
                     </label>
-                    <label className="block text-xs text-cork-blush">
+                    <label className="block text-[11px] text-cork-blush">
                       Note (optional)
                       <input
                         value={line.note}
                         onChange={(e) => updateLine(line.id, { note: e.target.value })}
                         placeholder="Landmark or description"
-                        className="mt-1 w-full rounded-md border border-white/10 bg-cork-plum/60 px-3 py-2 text-sm text-cork-cream outline-none focus:border-cork-coral"
+                        className="mt-1 w-full rounded-md border border-white/10 bg-cork-plum/60 px-2.5 py-1.5 text-xs text-cork-cream outline-none focus:border-cork-coral"
                       />
                     </label>
                   </div>
